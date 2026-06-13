@@ -32,25 +32,35 @@ All three run side by side without fighting over screen space: the Tag Manager a
 ## Features
 
 ### Favorites Search
-- Floating search bar on the **Saved** page (`/imagine/saved`).
-- Builds a local [IndexedDB](https://developer.mozilla.org/docs/Web/API/IndexedDB_API) index (`GrokSearchIndex`) of every saved image and its prompt.
-- **Incremental updates** — after the first full index, later visits only fetch images newer than what's already stored, stopping as soon as it hits a known one.
-- Multi-term search (all terms must match), newest/oldest sort, and a paginated results grid.
-- Result cards are real links, so middle-click, Ctrl/Cmd-click, and "copy link" all work.
-- Keyboard shortcuts: `Ctrl/Cmd+F` to focus, `Esc` to blur, `←` / `→` to page through results.
+- **Floating search bar** on the **Saved** page (`/imagine/saved`), top-center and clear of Grok's own selection toolbar.
+- **Local prompt index** — builds an [IndexedDB](https://developer.mozilla.org/docs/Web/API/IndexedDB_API) store (`GrokSearchIndex`) of every saved image and its prompt.
+- **First-time full index** of your entire saved library, with a live status readout in the bar.
+- **Incremental updates** — later visits only fetch images newer than what's already stored, stopping as soon as they hit a known one.
+- **Multi-term search** — every term must match the prompt.
+- **Newest / oldest sort** toggle.
+- **Paginated results grid** with first / prev / next / last controls and a match count.
+- **Real-link result cards** — middle-click, Ctrl/Cmd-click, and "copy link" all work natively.
+- **Keyboard shortcuts** — `Ctrl/Cmd+F` to focus, `Esc` to blur, `←` / `→` to page through results.
+- **Clear button** to reset the query in one click.
 
 ### Tag Manager
-- Launches from a **🏷 Tags** button into a full-screen, searchable grid.
-- Reads the same `GrokSearchIndex` the search tool builds (read-only) and writes tags straight to Grok through its native folder API.
-- Create tags, add a single image to a tag via a per-card popover, or **bulk-select** and tag many at once.
-- Sidebar filters: **All**, **Untagged**, and one entry per tag with live counts.
-- Tag membership counts load when you first open the panel — not on page load — so it stays out of your way until you use it.
+- **🏷 Tags launcher** that opens a full-screen, searchable image grid.
+- **Reads the search index** (`GrokSearchIndex`, read-only) so it shows the same library Search knows about.
+- **Writes to Grok's native tags (folders)** through Grok's own API — your tags show up in Grok itself, not just here.
+- **Create new tags** from the toolbar or inline while tagging.
+- **Per-image tagging** via a popover that shows current membership and lets you add to any tag.
+- **Bulk select + tag** — multi-select images and add them all to a tag at once.
+- **Sidebar filters** — **All**, **Untagged**, and one entry per tag, each with a live count.
+- **In-grid prompt search** to narrow the view.
+- **Paginated grid** (first / prev / next / last).
+- **Reload (↻)** to pull fresh tags and counts from Grok.
+- **Deferred counting** — the heavy per-tag membership scan only runs the first time you open the panel, not on page load.
 
 ### Bulk Favorites Downloader
-- Bottom-right button stack: **⬇ Download Favorites**, **🏷 Download by Tag**, plus a status log and a reset link.
-- Downloads in chunks (200 files per batch with a short pause between batches) to avoid hammering the browser.
-- **Remembers what it downloaded** in script storage and skips those on the next run.
-- Action modal options:
+- **Docked button stack** — **⬇ Download Favorites**, **🏷 Download by Tag**, a live status log, and a **🗑 Reset download history** button.
+- **Chunked downloads** — 200 files per batch with a short pause between batches to avoid overwhelming the browser.
+- **Download history** — remembers every file it has grabbed (in script storage) and skips them next time.
+- **Action modal** for the main download:
 
   | Option | What it does |
   | --- | --- |
@@ -59,10 +69,21 @@ All three run side by side without fighting over screen space: the Tag Manager a
   | Quick sync IDs | Same, but only scans the newest *N* pages (fast, for multi-device use) |
   | Download everything | Re-download all favorites, ignoring history |
 
-- Media-type filter (images, videos, or both) and an optional max-pages limit.
-- **Download by Tag** downloads only the items inside a chosen tag, with an optional "skip already downloaded" toggle.
-- A per-card **⬇** button appears on hover over any image, downloading that post (and its variations) directly — it identifies posts via React fiber props, so it works even when the thumbnail is a base64 blob with no URL.
-- Files land in `Downloads/grok-favorites/`, named `{id}_{model}_{prompt}.{ext}`.
+- **Media-type filter** — images only, videos only, or both.
+- **Max-pages limit** — cap how far back the fetch goes.
+- **Download by Tag** — download only the items inside a chosen tag, with:
+  - a **"skip already downloaded"** toggle,
+  - a **media-type filter**, and
+  - an **"include tag name in filename"** toggle that prefixes each file with the tag (e.g. `Nurse_1a2b3c4d_grok_a-prompt.jpg`).
+- **Per-card download button** — a **⬇** appears on hover over any image and downloads that post plus its variations directly. It identifies posts via React fiber props, so it works even when the thumbnail is a base64 blob with no URL, falling back through API, embedded blob, and CDN-URL strategies.
+- **Reset download history** — a solid button (with confirmation) that clears the memory so a future run re-fetches everything.
+- **Organized output** — files land in `Downloads/grok-favorites/`, named `{id}_{model}_{prompt}.{ext}` (with an optional tag prefix).
+
+### Shared
+- **One non-overlapping dock** (`#grok-toolkit-dock`, bottom-right) shared by the Tag Manager and Downloader buttons so nothing piles up or covers Grok's UI.
+- **Single-page-app aware** — watches Grok's in-app navigation and shows each tool only where it belongs (search on Saved, Tag Manager on Imagine pages, downloader site-wide).
+- **Collision-free by design** — each tool uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`) and runs in its own scope.
+- **Throttled card watcher** — the per-card download buttons are added by a debounced DOM observer (one pass per 200 ms) to stay light during Grok's constant virtual-scroll churn.
 
 ---
 
@@ -76,10 +97,38 @@ All three run side by side without fighting over screen space: the Tag Manager a
 
 ## Installation
 
-1. Install the [Tampermonkey](https://www.tampermonkey.net/) extension for your browser.
-2. Open `Grok-Imagine-Toolkit.user.js` (e.g. the **raw** file link in this repo). Tampermonkey will detect it and show an install page.
-3. Click **Install**.
-4. Open [grok.com/imagine](https://grok.com/imagine) and the tools appear automatically.
+### Step 1 — Install Tampermonkey
+
+First, install the Tampermonkey browser extension if you haven't already:
+
+- **Chrome** → [Install from Chrome Web Store](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+- **Firefox** → [Install from Firefox Add-ons](https://addons.mozilla.org/firefox/addon/tampermonkey/)
+- **Edge** → [Install from Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
+- **Safari** → [Install from App Store](https://www.tampermonkey.net/?browser=safari)
+
+### Step 2 — Configure Tampermonkey (do this *before* installing the script)
+
+After installing Tampermonkey, you need to enable two settings or the script will not work.
+
+1. Go to `chrome://extensions` in your address bar.
+2. Find **Tampermonkey** and click **Details**.
+3. Scroll down and turn on **"Allow User Scripts"**.
+
+This allows Tampermonkey to run scripts that have not been reviewed by Google. You should only enable this if you trust the script you are installing.
+
+4. On the same page, also turn on **"Allow in Incognito"** if you want the script to work in private/incognito windows.
+
+Without this, the script will only run in normal browser windows.
+
+> **Note:** Steps 1–3 above describe Chrome. On Edge use `edge://extensions`; on Firefox and Safari these toggles aren't required.
+
+Once both settings are enabled, proceed to installation below.
+
+### Step 3 — Install the script
+
+1. Open `Grok-Imagine-Toolkit.user.js` (e.g. the **raw** file link in this repo). Tampermonkey will detect it and show an install page.
+2. Click **Install**.
+3. Open [grok.com/imagine](https://grok.com/imagine) and the tools appear automatically.
 
 > **Upgrading from the three separate scripts?** Uninstall the old *Grok Imagine Favorites Search*, *Grok Imagine Tag Manager*, and *Grok Imagine Bulk Favorites Downloader* scripts first, or you'll get duplicate buttons and two copies of the indexer running at once.
 
@@ -105,7 +154,7 @@ Click **🏷 Tags** (bottom-right) to open the grid. Search prompts at the top, 
 - Use **↻** to reload tags and counts from Grok.
 
 ### Bulk Favorites Downloader
-Click **⬇ Download Favorites** and choose an action from the modal, or **🏷 Download by Tag** to grab a single tag. Hover any image and click its **⬇** to download just that one. Use **🗑 Reset download history** if you want a future run to re-fetch everything.
+Click **⬇ Download Favorites** and choose an action from the modal, or **🏷 Download by Tag** to grab a single tag — the tag dialog also lets you skip already-downloaded items, filter by media type, and **include the tag name in each filename**. Hover any image and click its **⬇** to download just that one. Use **🗑 Reset download history** if you want a future run to re-fetch everything.
 
 ---
 
@@ -167,4 +216,4 @@ These are the same endpoints Grok's own web app uses; they may change if Grok up
 
 ## License
 
-Released under the [MIT License](LICENSE). Copyright © 2026.
+Released under the [MIT License](LICENSE). Copyright © 2026. Swap in your preferred license if you'd rather.
