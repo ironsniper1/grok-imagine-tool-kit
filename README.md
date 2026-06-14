@@ -202,6 +202,7 @@ These are the same endpoints Grok's own web app uses; they may change if Grok up
 - **No tools appear** — confirm Tampermonkey is enabled and you're on `grok.com/imagine`. The search bar only shows on the Saved page; the **🏷 Tags** button only on Imagine pages.
 - **Search finds nothing / Tag Manager grid is empty** — the index hasn't been built yet. Visit the Saved page and let indexing finish first.
 - **Downloads do nothing** — your browser may be blocking multiple automatic downloads; allow them for grok.com. Check the script's log panel and the browser console (entries are prefixed `[GrokDL]`).
+- **"Browser API Downloads — Click OK to allow Tampermonkey to start instant downloads" keeps popping up** — this prompt comes from Tampermonkey, not the script. The bulk downloader uses *instant* downloads (no Save As dialog), and Tampermonkey's **Browser API** download mode asks for the optional download permission before each batch. To stop it, open the Tampermonkey dashboard → **Settings** → set *Config mode* to **Advanced** if needed → change **Download Mode** from **Browser API** to **Native**. Per Tampermonkey, switching to Native disables this prompt (it may install a small native download helper the first time). Native mode is also more reliable when downloading many files quickly. Alternatively, just click **OK** and grant the permission once. 
 - **Duplicate buttons** — you still have one or more of the original three scripts installed. Remove them.
 
 ---
