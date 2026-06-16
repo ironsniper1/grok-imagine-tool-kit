@@ -5,6 +5,19 @@ All notable changes to **Grok Imagine Toolkit** are documented here.
 This project adheres loosely to [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format. Newest releases first.
 
+## [1.6.0] — 2026-06-14
+
+### Added
+- **Saved Prompts** — a new **📝 Prompts** tool in the dock. Save prompts (type/paste them in, or grab whatever's currently in Grok's "Type to imagine" box), then click any saved prompt to type it back into Grok's prompt box — either replacing the box or appending to it (toggle, remembered across sessions). Prompts persist across sessions and can be deleted individually.
+
+## [1.5.0] — 2026-06-14
+
+### Changed
+- **Search now matches whole words** instead of raw substrings, in **both** the main Favorites Search and the Tag Manager's in-grid search. Searching "mage" no longer drags in every prompt containing "i**mage**". Prefix typing still works (e.g. "warr" → "warrior"); only mid-word false positives are excluded. Match counts will be more accurate.
+
+### Added
+- **Auto-update support** via `@updateURL` / `@downloadURL`, pointed at the latest GitHub release asset. Install from the release link once and Tampermonkey handles future updates automatically (when `@version` is bumped on a new release).
+
 ## [1.4.0] — 2026-06-13
 
 ### Added
@@ -48,6 +61,8 @@ This project adheres loosely to [Semantic Versioning](https://semver.org/) and t
 ### Notes
 - Replaces the standalone *Grok Imagine Favorites Search*, *Grok Imagine Tag Manager*, and *Grok Imagine Bulk Favorites Downloader* scripts — uninstall those to avoid duplicate UI.
 
+[1.6.0]: #160--2026-06-14
+[1.5.0]: #150--2026-06-14
 [1.4.0]: #140--2026-06-13
 [1.3.0]: #130--2026-06-13
 [1.2.0]: #120--2026-06-13
