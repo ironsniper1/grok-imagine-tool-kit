@@ -1,12 +1,13 @@
 # Grok Imagine Toolkit
 
-A single [Tampermonkey](https://www.tampermonkey.net/) userscript that adds three independent power tools to [Grok Imagine](https://grok.com/imagine):
+A single [Tampermonkey](https://www.tampermonkey.net/) userscript that adds four independent power tools to [Grok Imagine](https://grok.com/imagine):
 
 1. **Favorites Search** — full-text prompt search across all your saved images, backed by a local index.
 2. **Tag Manager** — organize your saved images into Grok's native tags (folders) from a searchable grid, with per-image and bulk tagging.
 3. **Bulk Favorites Downloader** — download your entire favorites library (or a single tag) in batches, with download history so you never grab the same file twice.
+4. **Saved Prompts** — a personal prompt library you can save to and re-insert into Grok's prompt box with one click.
 
-All three run side by side without fighting over screen space: the Tag Manager and Downloader share one tidy bottom-right dock, and the search bar floats top-center clear of Grok's own toolbar.
+All four run side by side without fighting over screen space: the Tag Manager, Downloader, and Saved Prompts buttons share one tidy bottom-right dock, and the search bar floats top-center clear of Grok's own toolbar.
 
 ---
 
@@ -20,6 +21,7 @@ All three run side by side without fighting over screen space: the Tag Manager a
   - [Favorites Search](#favorites-search)
   - [Tag Manager](#tag-manager)
   - [Bulk Favorites Downloader](#bulk-favorites-downloader)
+  - [Saved Prompts](#saved-prompts-1)
 - [How it works](#how-it-works)
 - [Performance](#performance)
 - [Configuration](#configuration)
@@ -79,10 +81,17 @@ All three run side by side without fighting over screen space: the Tag Manager a
 - **Reset download history** — a solid button (with confirmation) that clears the memory so a future run re-fetches everything.
 - **Organized output** — files land in `Downloads/grok-favorites/`, named `{id}_{model}_{prompt}.{ext}` (with an optional tag prefix).
 
+### Saved Prompts
+- **📝 Prompts launcher** in the dock opens a panel with your saved-prompt library.
+- **Save manually** — type or paste any prompt and save it.
+- **Save current** — grab whatever's currently in Grok's "Type to imagine" box and save it.
+- **One-click insert** — click a saved prompt to type it into Grok's prompt box, either **replacing** what's there or **appending** to it (toggle, remembered across sessions).
+- **Persistent** — prompts are stored across sessions (newest first, exact duplicates de-duped) and can be deleted individually.
+
 ### Shared
-- **One non-overlapping dock** (`#grok-toolkit-dock`, bottom-right) shared by the Tag Manager and Downloader buttons so nothing piles up or covers Grok's UI.
-- **Single-page-app aware** — watches Grok's in-app navigation and shows each tool only where it belongs (search on Saved, Tag Manager on Imagine pages, downloader site-wide).
-- **Collision-free by design** — each tool uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`) and runs in its own scope.
+- **One non-overlapping dock** (`#grok-toolkit-dock`, bottom-right) shared by the Tag Manager, Downloader, and Saved Prompts buttons so nothing piles up or covers Grok's UI.
+- **Single-page-app aware** — watches Grok's in-app navigation and shows each tool only where it belongs (search on Saved, Tag Manager / Saved Prompts on Imagine pages, downloader site-wide).
+- **Collision-free by design** — each tool uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`, `grokpr-*`) and runs in its own scope.
 - **Throttled card watcher** — the per-card download buttons are added by a debounced DOM observer (one pass per 200 ms) to stay light during Grok's constant virtual-scroll churn.
 
 ---
@@ -156,16 +165,19 @@ Click **🏷 Tags** (bottom-right) to open the grid. Search prompts at the top, 
 ### Bulk Favorites Downloader
 Click **⬇ Download Favorites** and choose an action from the modal, or **🏷 Download by Tag** to grab a single tag — the tag dialog also lets you skip already-downloaded items, filter by media type, and **include the tag name in each filename**. Hover any image and click its **⬇** to download just that one. Use **🗑 Reset download history** if you want a future run to re-fetch everything.
 
+### Saved Prompts
+Click **📝 Prompts** to open the library. Type or paste a prompt and hit **＋ Save**, or click **⤵ Save current** to store whatever's in Grok's "Type to imagine" box. Click any saved prompt to drop it into Grok's prompt box, or **🗑** to delete it. Tick **Append to prompt box** if you'd rather add to the existing text instead of replacing it.
+
 ---
 
 ## How it works
 
-The script is one outer wrapper containing three self-contained modules, each keeping its original logic intact. Two small pieces are shared:
+The script is one outer wrapper containing four self-contained modules, each keeping its original logic intact. Two small pieces are shared:
 
-- **`#grok-toolkit-dock`** — a fixed bottom-right column that the Tag Manager button and the Downloader stack are placed into, so they stack neatly instead of overlapping each other or Grok's UI.
-- **A single-page-app path watcher** — Grok changes the URL without reloading, so the toolkit watches for navigation and shows/hides the right tools per page (the search bar only on Saved, the Tag Manager only on Imagine pages).
+- **`#grok-toolkit-dock`** — a fixed bottom-right column that the Tag Manager, Downloader, and Saved Prompts buttons are placed into, so they stack neatly instead of overlapping each other or Grok's UI.
+- **A single-page-app path watcher** — Grok changes the URL without reloading, so the toolkit watches for navigation and shows/hides the right tools per page (the search bar only on Saved, the Tag Manager and Saved Prompts only on Imagine pages).
 
-The **Favorites Search** module owns the `GrokSearchIndex` IndexedDB store; the **Tag Manager** reads from it. The **Downloader** keeps its own download history in script storage (`grokdl_downloaded_ids`). The modules don't otherwise share state, and each uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`) to avoid collisions.
+The **Favorites Search** module owns the `GrokSearchIndex` IndexedDB store; the **Tag Manager** reads from it. The **Downloader** keeps its own download history in script storage (`grokdl_downloaded_ids`), and **Saved Prompts** stores its library in `grok_saved_prompts`. The modules don't otherwise share state, and each uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`, `grokpr-*`) to avoid collisions.
 
 ---
 
