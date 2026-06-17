@@ -40,6 +40,9 @@ All four run side by side without fighting over screen space: the Tag Manager, D
 - **Incremental updates** — later visits only fetch images newer than what's already stored, stopping as soon as they hit a known one.
 - **Multi-term search** — every term must match the prompt.
 - **Newest / oldest sort** toggle.
+- **Date filter** — From/To date pickers that narrow results by creation date; works with a keyword search or on its own.
+- **🔀 Shuffle** — randomize the current results for inspiration or reviewing a large collection.
+- **⤓ Export results** — export the current (filtered/shuffled) view to JSON (id, prompt, date, post URL, media URL).
 - **Paginated results grid** with first / prev / next / last controls and a match count.
 - **Real-link result cards** — middle-click, Ctrl/Cmd-click, and "copy link" all work natively.
 - **Keyboard shortcuts** — `Ctrl/Cmd+F` to focus, `Esc` to blur, `←` / `→` to page through results.
@@ -87,12 +90,14 @@ All four run side by side without fighting over screen space: the Tag Manager, D
 - **Save current** — grab whatever's currently in Grok's "Type to imagine" box and save it.
 - **One-click insert** — click a saved prompt to type it into Grok's prompt box, either **replacing** what's there or **appending** to it (toggle, remembered across sessions).
 - **Persistent** — prompts are stored across sessions (newest first, exact duplicates de-duped) and can be deleted individually.
+- **Import / export** — back up or share your library as a JSON file; importing merges new, non-duplicate prompts in at the top.
 
 ### Shared
 - **One collapsible dock** (`#grok-toolkit-dock`, bottom-right) that starts as a single **🧰 Grok Toolkit** button. Click it to reveal the Tag Manager, Downloader, and Saved Prompts buttons; click it again or click away to collapse — so nothing piles up or covers Grok's UI.
 - **Single-page-app aware** — watches Grok's in-app navigation and shows each tool only where it belongs (search on Saved, Tag Manager / Saved Prompts on Imagine pages, downloader site-wide). The whole dock hides itself on the single-image view (`/imagine/post/...`), where Grok has its own bottom-right controls, and reappears on the grid/Saved pages.
 - **Collision-free by design** — each tool uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`, `grokpr-*`) and runs in its own scope.
 - **Throttled card watcher** — the per-card download buttons are added by a debounced DOM observer (one pass per 200 ms) to stay light during Grok's constant virtual-scroll churn.
+- **Toast notifications** — brief on-screen confirmations for one-off actions like exports and imports.
 
 ---
 
