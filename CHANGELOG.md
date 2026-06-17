@@ -5,6 +5,14 @@ All notable changes to **Grok Imagine Toolkit** are documented here.
 This project adheres loosely to [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format. Newest releases first.
 
+## [1.7.0] — 2026-06-16
+
+### Changed
+- **Collapsible dock** — the dock now starts as a single **🧰 Grok Toolkit** button. Click it to fan out the tools (Prompts, Tags, Download Favorites, Download by Tag, Reset); click it again or click away to collapse. Keeps the corner tidy instead of showing every button all the time.
+
+### Fixed
+- **Dock no longer covers Grok's controls on the single-image view.** After a Grok Imagine UI update, the post/edit view (`/imagine/post/...`) gained its own bottom-right controls (favorite, ••• menu, action strip). The toolkit dock now hides itself on that view and reappears on the grid/Saved pages.
+
 ## [1.6.0] — 2026-06-14
 
 ### Added
@@ -61,6 +69,7 @@ This project adheres loosely to [Semantic Versioning](https://semver.org/) and t
 ### Notes
 - Replaces the standalone *Grok Imagine Favorites Search*, *Grok Imagine Tag Manager*, and *Grok Imagine Bulk Favorites Downloader* scripts — uninstall those to avoid duplicate UI.
 
+[1.7.0]: #170--2026-06-16
 [1.6.0]: #160--2026-06-14
 [1.5.0]: #150--2026-06-14
 [1.4.0]: #140--2026-06-13
