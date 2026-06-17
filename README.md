@@ -7,7 +7,7 @@ A single [Tampermonkey](https://www.tampermonkey.net/) userscript that adds four
 3. **Bulk Favorites Downloader** — download your entire favorites library (or a single tag) in batches, with download history so you never grab the same file twice.
 4. **Saved Prompts** — a personal prompt library you can save to and re-insert into Grok's prompt box with one click.
 
-All four run side by side without fighting over screen space: the Tag Manager, Downloader, and Saved Prompts buttons share one tidy bottom-right dock, and the search bar floats top-center clear of Grok's own toolbar.
+All four run side by side without fighting over screen space: the Tag Manager, Downloader, and Saved Prompts buttons live in one tidy bottom-right dock that collapses to a single **🧰 Grok Toolkit** launcher, and the search bar floats top-center clear of Grok's own toolbar.
 
 ---
 
@@ -89,8 +89,8 @@ All four run side by side without fighting over screen space: the Tag Manager, D
 - **Persistent** — prompts are stored across sessions (newest first, exact duplicates de-duped) and can be deleted individually.
 
 ### Shared
-- **One non-overlapping dock** (`#grok-toolkit-dock`, bottom-right) shared by the Tag Manager, Downloader, and Saved Prompts buttons so nothing piles up or covers Grok's UI.
-- **Single-page-app aware** — watches Grok's in-app navigation and shows each tool only where it belongs (search on Saved, Tag Manager / Saved Prompts on Imagine pages, downloader site-wide).
+- **One collapsible dock** (`#grok-toolkit-dock`, bottom-right) that starts as a single **🧰 Grok Toolkit** button. Click it to reveal the Tag Manager, Downloader, and Saved Prompts buttons; click it again or click away to collapse — so nothing piles up or covers Grok's UI.
+- **Single-page-app aware** — watches Grok's in-app navigation and shows each tool only where it belongs (search on Saved, Tag Manager / Saved Prompts on Imagine pages, downloader site-wide). The whole dock hides itself on the single-image view (`/imagine/post/...`), where Grok has its own bottom-right controls, and reappears on the grid/Saved pages.
 - **Collision-free by design** — each tool uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`, `grokpr-*`) and runs in its own scope.
 - **Throttled card watcher** — the per-card download buttons are added by a debounced DOM observer (one pass per 200 ms) to stay light during Grok's constant virtual-scroll churn.
 
@@ -175,7 +175,7 @@ Click **📝 Prompts** to open the library. Type or paste a prompt and hit **＋
 The script is one outer wrapper containing four self-contained modules, each keeping its original logic intact. Two small pieces are shared:
 
 - **`#grok-toolkit-dock`** — a fixed bottom-right column that the Tag Manager, Downloader, and Saved Prompts buttons are placed into, so they stack neatly instead of overlapping each other or Grok's UI.
-- **A single-page-app path watcher** — Grok changes the URL without reloading, so the toolkit watches for navigation and shows/hides the right tools per page (the search bar only on Saved, the Tag Manager and Saved Prompts only on Imagine pages).
+- **A single-page-app path watcher** — Grok changes the URL without reloading, so the toolkit watches for navigation and shows/hides the right tools per page (the search bar only on Saved, the Tag Manager and Saved Prompts only on Imagine pages, and the whole dock hidden on the single-image `/imagine/post/...` view so it doesn't cover Grok's own controls).
 
 The **Favorites Search** module owns the `GrokSearchIndex` IndexedDB store; the **Tag Manager** reads from it. The **Downloader** keeps its own download history in script storage (`grokdl_downloaded_ids`), and **Saved Prompts** stores its library in `grok_saved_prompts`. The modules don't otherwise share state, and each uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`, `grokpr-*`) to avoid collisions.
 
@@ -229,4 +229,4 @@ These are the same endpoints Grok's own web app uses; they may change if Grok up
 
 ## License
 
-Released under the [MIT License](LICENSE). Copyright © 2026. Swap in your preferred license if you'd rather.
+Released under the [MIT License](LICENSE). Copyright © 2026.
