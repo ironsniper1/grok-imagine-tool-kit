@@ -5,6 +5,15 @@ All notable changes to **Grok Imagine Toolkit** are documented here.
 This project adheres loosely to [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format. Newest releases first.
 
+## [1.8.0] — 2026-06-16
+
+### Added
+- **Date filter** in search — From/To date pickers that filter saved images by creation date. Works alongside a keyword search, or on its own to browse everything in a date window.
+- **🔀 Shuffle** — randomize the current search results for inspiration or reviewing a large collection.
+- **⤓ Export search results** — export the current (filtered/shuffled) results to JSON (id, prompt, date, post URL, media URL) for backup or use in other scripts.
+- **Import / export prompts** — the Saved Prompts panel can now export your library to JSON and import one back in (new, non-duplicate prompts merge at the top). Great for backups and sharing.
+- **Toast notifications** — long/one-off actions (exports, imports) now show a brief on-screen confirmation instead of only logging to the console.
+
 ## [1.7.0] — 2026-06-16
 
 ### Changed
@@ -69,6 +78,7 @@ This project adheres loosely to [Semantic Versioning](https://semver.org/) and t
 ### Notes
 - Replaces the standalone *Grok Imagine Favorites Search*, *Grok Imagine Tag Manager*, and *Grok Imagine Bulk Favorites Downloader* scripts — uninstall those to avoid duplicate UI.
 
+[1.8.0]: #180--2026-06-16
 [1.7.0]: #170--2026-06-16
 [1.6.0]: #160--2026-06-14
 [1.5.0]: #150--2026-06-14
