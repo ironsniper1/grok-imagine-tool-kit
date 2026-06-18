@@ -7,7 +7,7 @@ A single [Tampermonkey](https://www.tampermonkey.net/) userscript that adds four
 3. **Bulk Favorites Downloader** — download your entire favorites library (or a single tag) in batches, with download history so you never grab the same file twice.
 4. **Saved Prompts** — a personal prompt library you can save to and re-insert into Grok's prompt box with one click.
 
-All four run side by side without fighting over screen space: the Tag Manager, Downloader, and Saved Prompts buttons live in one tidy bottom-right dock that collapses to a single **🧰 Grok Toolkit** launcher, and the search bar floats top-center clear of Grok's own toolbar.
+All four run side by side without fighting over screen space: the Tag Manager, Downloader, and Saved Prompts buttons live in one tidy bottom-right dock that collapses to a single **🧰 Grok Toolkit** launcher (with a **⚙️ Settings** button for tuning page size and download timing), and the search bar floats top-center clear of Grok's own toolbar.
 
 ---
 
@@ -98,6 +98,8 @@ All four run side by side without fighting over screen space: the Tag Manager, D
 - **Collision-free by design** — each tool uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`, `grokpr-*`) and runs in its own scope.
 - **Throttled card watcher** — the per-card download buttons are added by a debounced DOM observer (one pass per 200 ms) to stay light during Grok's constant virtual-scroll churn.
 - **Toast notifications** — brief on-screen confirmations for one-off actions like exports and imports.
+- **⚙️ Settings panel** — tune search page size and download timing from a dock button; values are clamped, persisted, and applied on reload (see [Configuration](#configuration)).
+- **Fails loudly, not silently** — when a Grok API call fails (e.g. an expired session), the search indexer reports it with a clear toast instead of leaving search quietly empty or stale.
 
 ---
 
@@ -199,18 +201,19 @@ If the page still feels heavy on a very large library, the next lever is scoping
 
 ## Configuration
 
-Each module has tunable constants near the top of its section in the script:
+Most day-to-day tuning is now done in the **⚙️ Settings panel** (dock button above the 🧰 launcher) — no script editing required. It exposes:
 
-| Constant | Module | Default | Meaning |
+| Setting | Default | Range | Meaning |
 | --- | --- | --- | --- |
-| `FAVORITES_PATH` | Search | `/imagine/saved` | Where the search bar appears |
-| `PAGE_SIZE` | Search | `20` | Results per page |
-| `CHUNK_SIZE` | Downloader | `200` | Files per download batch |
-| `CHUNK_PAUSE_MS` | Downloader | `5000` | Pause between batches (ms) |
-| `API_DELAY_MS` | Downloader | `700` | Delay between API pages (ms) |
-| `STORAGE_KEY` | Downloader | `grokdl_downloaded_ids` | Where download history is stored |
+| Search results per page | `20` | 5–200 | Results shown per search page |
+| Download batch size (files) | `200` | 10–2000 | Files per download batch before a pause |
+| Pause between batches (sec) | `5` | 0–120 | Wait between download batches |
+| Delay between downloads (ms) | `250` | 0–10000 | Wait between individual file downloads |
+| Delay between API pages (ms) | `700` | 0–10000 | Wait between paged API requests |
 
-These are the same endpoints Grok's own web app uses; they may change if Grok updates its API.
+Values are clamped to the listed ranges, saved across sessions (`grok_toolkit_settings`), and applied on the next page reload. **Reset to defaults** restores everything. If downloads ever stall or trip Tampermonkey's download prompt, raising the delays / pause here usually helps.
+
+A few non-UI constants still live near the top of each module in the script (e.g. `FAVORITES_PATH` for where the search bar appears, and `STORAGE_KEY` = `grokdl_downloaded_ids` for download history). These are the same endpoints Grok's own web app uses; they may change if Grok updates its API.
 
 ---
 
