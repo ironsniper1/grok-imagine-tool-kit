@@ -5,6 +5,15 @@ All notable changes to **Grok Imagine Toolkit** are documented here.
 This project adheres loosely to [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format. Newest releases first.
 
+## [1.9.0] — 2026-06-16
+
+### Added
+- **⚙️ Settings panel** — a new dock button (above the 🧰 launcher) opens a panel for tuning the toolkit without editing the script. Exposes search results-per-page and the downloader's batch size, batch pause, per-download delay, and per-API-page delay. Values are clamped to safe ranges, persist across sessions, and apply on the next page reload. Includes **Reset to defaults**.
+
+### Changed
+- **Error resilience** — failures now surface instead of failing silently. The search indexer checks HTTP status (so a signed-out/expired session no longer looks like an empty library) and shows a clear toast such as *"Couldn't update search index: HTTP 401 (not signed in?)"* instead of leaving search quietly stale.
+- The "no results" message now explains date-range emptiness — e.g. *No "pinup" images between 2025-01-01 and 2025-12-31* — so an empty date filter no longer looks like a broken search.
+
 ## [1.8.0] — 2026-06-16
 
 ### Added
@@ -78,6 +87,7 @@ This project adheres loosely to [Semantic Versioning](https://semver.org/) and t
 ### Notes
 - Replaces the standalone *Grok Imagine Favorites Search*, *Grok Imagine Tag Manager*, and *Grok Imagine Bulk Favorites Downloader* scripts — uninstall those to avoid duplicate UI.
 
+[1.9.0]: #190--2026-06-16
 [1.8.0]: #180--2026-06-16
 [1.7.0]: #170--2026-06-16
 [1.6.0]: #160--2026-06-14
