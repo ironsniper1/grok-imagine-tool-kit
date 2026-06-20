@@ -7,7 +7,9 @@ A single [Tampermonkey](https://www.tampermonkey.net/) userscript that adds four
 3. **Bulk Favorites Downloader** — download your entire favorites library (or a single tag) in batches, with download history so you never grab the same file twice.
 4. **Saved Prompts** — a personal prompt library you can save to and re-insert into Grok's prompt box with one click.
 
-All four run side by side without fighting over screen space: the Tag Manager, Downloader, and Saved Prompts buttons live in one tidy bottom-right dock that collapses to a single **🧰 Grok Toolkit** launcher (with a **⚙️ Settings** button for tuning page size and download timing), and the search bar floats top-center clear of Grok's own toolbar.
+All four run side by side without fighting over screen space: the Tag Manager, Downloader, Saved Prompts, **📊 Dashboard**, and **⚙️ Settings** buttons live in one tidy bottom-right dock that collapses to a single **🧰 Grok Toolkit** launcher, and the search bar floats top-center clear of Grok's own toolbar. The dock can be styled **Classic**, **Light**, or **Compact** from Settings.
+
+Beyond the four core tools, 2.0 adds prompt **templates with variables**, **custom download filenames**, **ZIP export**, **auto-tagging** by prompt keyword, tag **rename / delete / merge**, a **stats dashboard**, and a **Stop** button for long downloads.
 
 ---
 
@@ -60,6 +62,11 @@ All four run side by side without fighting over screen space: the Tag Manager, D
 - **Paginated grid** (first / prev / next / last).
 - **Reload (↻)** to pull fresh tags and counts from Grok.
 - **Deferred counting** — the heavy per-tag membership scan only runs the first time you open the panel, not on page load.
+- **🪄 Auto-tag by prompt** — define rules like `Witch: witch, hex, cauldron` (one per line) and the toolkit creates those tags and files every matching image into them. **Preview** is read-only and safe; **Apply** writes to Grok's tags, is rate-limited, skips images already tagged (so re-runs are cheap), and can be stopped mid-run.
+- **🗂 Manage tags (rename / delete / merge)** — *new in 2.0; please test before relying on it.* Rename a tag, bulk-delete tags, or merge several tags into one.
+  - **Delete** removes only the tag — your images stay in your library.
+  - **Merge** reads each source tag's members fresh from Grok, adds them to the tag you choose to keep, and skips images already there (safe to re-run). A checkbox controls whether the other tags are **deleted after merging** (true merge) or **kept** (copy). A source tag is deleted only when *all* of its images moved without error; any failure keeps it.
+  - Both are rate-limited and Stop-able. (Removing a single image from a tag is intentionally not included yet — its Grok endpoint's behavior isn't confirmed.)
 
 ### Bulk Favorites Downloader
 - **Docked button stack** — **⬇ Download Favorites**, **🏷 Download by Tag**, a live status log, and a **🗑 Reset download history** button.
@@ -81,8 +88,11 @@ All four run side by side without fighting over screen space: the Tag Manager, D
   - a **media-type filter**, and
   - an **"include tag name in filename"** toggle that prefixes each file with the tag (e.g. `Nurse_1a2b3c4d_grok_a-prompt.jpg`).
 - **Per-card download button** — a **⬇** appears on hover over any image and downloads that post plus its variations directly. It identifies posts via React fiber props, so it works even when the thumbnail is a base64 blob with no URL, falling back through API, embedded blob, and CDN-URL strategies.
+- **📦 Bundle as ZIP** — a toggle that packages a run into ZIP archive(s) instead of loose files (honored by both Download Favorites and Download by Tag). Uses a built-in, dependency-free ZIP writer; batch size is configurable in Settings.
+- **■ Stop** — cancel a long download or ZIP run mid-flight. Files already saved are kept and download history is preserved, so a re-run skips what completed. Works during both the collection and download phases.
+- **Custom filenames** — a filename **template** in Settings (tokens `{tag} {id} {model} {prompt} {date} {index}`) controls how files are named. The default reproduces the classic `{id}_{model}_{prompt}` naming.
 - **Reset download history** — a solid button (with confirmation) that clears the memory so a future run re-fetches everything.
-- **Organized output** — files land in `Downloads/grok-favorites/`, named `{id}_{model}_{prompt}.{ext}` (with an optional tag prefix).
+- **Organized output** — files land in a folder named for the tag (or a name you choose for favorites), e.g. `Downloads/Nurse/`, named from your filename template.
 
 ### Saved Prompts
 - **📝 Prompts launcher** in the dock opens a panel with your saved-prompt library.
@@ -91,11 +101,18 @@ All four run side by side without fighting over screen space: the Tag Manager, D
 - **One-click insert** — click a saved prompt to type it into Grok's prompt box, either **replacing** what's there or **appending** to it (toggle, remembered across sessions).
 - **Persistent** — prompts are stored across sessions (newest first, exact duplicates de-duped) and can be deleted individually.
 - **Import / export** — back up or share your library as a JSON file; importing merges new, non-duplicate prompts in at the top.
+- **🧩 Templates with variables** — any saved prompt containing `{placeholders}` becomes a reusable template (shown with a 🧩 badge). Clicking it opens a fill-in dialog with a live preview and remembers your last-used values per template, so you can reuse a structure with different subjects in seconds.
+
+### Dashboard
+- **📊 Dashboard launcher** opens a read-only overview of your library: total indexed images, number of tags, downloads tracked, and saved prompts/templates.
+- **Date span** of your collection, a **per-month bar chart** of activity, and your **most-used prompt keywords** (common stop-words filtered out).
+- Purely informational — it reads your local index and Grok's tag list and changes nothing.
 
 ### Shared
-- **One collapsible dock** (`#grok-toolkit-dock`, bottom-right) that starts as a single **🧰 Grok Toolkit** button. Click it to reveal the Tag Manager, Downloader, and Saved Prompts buttons; click it again or click away to collapse — so nothing piles up or covers Grok's UI.
+- **One collapsible dock** (`#grok-toolkit-dock`, bottom-right) that starts as a single **🧰 Grok Toolkit** button. Click it to reveal the tools; click it again or click away to collapse — so nothing piles up or covers Grok's UI.
+- **Dock styles** — choose **Classic** (default), **Light** (one consistent button language), or **Compact** (a horizontal icon strip with the downloader in a popover) from the Settings panel. Applies on reload.
 - **Single-page-app aware** — watches Grok's in-app navigation and shows each tool only where it belongs (search on Saved, Tag Manager / Saved Prompts on Imagine pages, downloader site-wide). The whole dock hides itself on the single-image view (`/imagine/post/...`), where Grok has its own bottom-right controls, and reappears on the grid/Saved pages.
-- **Collision-free by design** — each tool uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`, `grokpr-*`) and runs in its own scope.
+- **Collision-free by design** — each tool uses its own ID/CSS prefix (`grok-*`, `gtm-*`, `grokdl-*`, `grokpr-*`, `grokset-*`, `grokdash-*`) and runs in its own scope.
 - **Throttled card watcher** — the per-card download buttons are added by a debounced DOM observer (one pass per 200 ms) to stay light during Grok's constant virtual-scroll churn.
 - **Toast notifications** — brief on-screen confirmations for one-off actions like exports and imports.
 - **⚙️ Settings panel** — tune search page size and download timing from a dock button; values are clamped, persisted, and applied on reload (see [Configuration](#configuration)).
@@ -210,8 +227,11 @@ Most day-to-day tuning is now done in the **⚙️ Settings panel** (dock button
 | Pause between batches (sec) | `5` | 0–120 | Wait between download batches |
 | Delay between downloads (ms) | `250` | 0–10000 | Wait between individual file downloads |
 | Delay between API pages (ms) | `700` | 0–10000 | Wait between paged API requests |
+| ZIP batch size (files) | `100` | 10–1000 | Files per ZIP archive when *Bundle as ZIP* is on |
+| Download filename template | `{tag}_{id}_{model}_{prompt}` | — | Naming pattern; tokens `{tag} {id} {model} {prompt} {date} {index}` |
+| Dock style | `classic` | classic / light / compact | Dock appearance |
 
-Values are clamped to the listed ranges, saved across sessions (`grok_toolkit_settings`), and applied on the next page reload. **Reset to defaults** restores everything. If downloads ever stall or trip Tampermonkey's download prompt, raising the delays / pause here usually helps.
+Values are clamped or validated, saved across sessions (`grok_toolkit_settings`), and applied on the next page reload. **Reset to defaults** restores everything. If downloads ever stall or trip Tampermonkey's download prompt, raising the delays / pause here usually helps.
 
 A few non-UI constants still live near the top of each module in the script (e.g. `FAVORITES_PATH` for where the search bar appears, and `STORAGE_KEY` = `grokdl_downloaded_ids` for download history). These are the same endpoints Grok's own web app uses; they may change if Grok updates its API.
 
