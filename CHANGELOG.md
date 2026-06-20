@@ -5,6 +5,23 @@ All notable changes to **Grok Imagine Toolkit** are documented here.
 This project adheres loosely to [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format. Newest releases first.
 
+## [2.0.0] — 2026-06-19
+
+Major release. Every tool gained real capabilities, and the dock is now yours to style. All features below were tested live except where noted.
+
+### Added
+- **Prompt templates with variables** — saved prompts containing `{placeholders}` become reusable templates (marked with a 🧩 badge). Clicking one opens a fill-in dialog with a live preview, and remembers your last-used values per template. Plain prompts work exactly as before.
+- **Custom download filenames** — a `Download filename template` setting controls how saved files are named, using tokens `{tag} {id} {model} {prompt} {date} {index}`. The default reproduces the previous naming, so nothing changes unless you want it to. Empty tokens collapse cleanly and illegal characters are sanitized.
+- **📦 Bundle as ZIP** — a toggle on the downloader packages a run into ZIP archives instead of loose files. Honored by both Download Favorites and Download by Tag. Uses a dependency-free, built-in ZIP writer (no external libraries) for reliability, with a configurable batch size.
+- **🪄 Auto-tag by prompt** — in the Tags panel, define rules like `Witch: witch, hex, cauldron` and the toolkit creates the tags and files matching images into them via Grok's API. Preview is read-only and safe; Apply is rate-limited, idempotent (skips already-tagged images), and Stop-able.
+- **📊 Dashboard** — a new dock button opens a read-only overview: total indexed images, tag count, downloads, saved prompts/templates, the date span of your library, a per-month bar chart, and your most-used prompt keywords.
+- **Dock styles (Classic / Light / Compact)** — a new Settings option restyles the dock. *Classic* is unchanged (default); *Light* gives every control one consistent button language; *Compact* collapses the dock into a horizontal strip of icons with the downloader tucked into a popover. Applies on reload.
+- **■ Stop button for downloads** — long Download Favorites / Download by Tag runs (including ZIP runs) can now be cancelled mid-flight. Files already saved are kept, and download history is preserved so a re-run skips what completed. Works during both the collection and download phases.
+- **🗂 Manage tags — rename, delete, merge** *(new — please test before relying on it)*. A Manage button in the Tags panel opens a dialog to rename a tag, bulk-delete tags, or merge several tags into one. Deleting a tag removes only the tag — your images stay in your library. Merge reads each source tag's members fresh, skips images already in the target (safe to re-run), and only deletes a source tag once **all** of its images have moved without error; any failure keeps the tag. Rate-limited and Stop-able. Built on Grok endpoints confirmed by live testing (`folder/update`, `folder/delete`, `post/like`). Remove-image-from-tag is intentionally not included pending confirmation of its endpoint's behavior.
+
+### Changed
+- The Settings panel now supports text and dropdown options in addition to numeric tunables (used by the filename template and dock style).
+
 ## [1.9.0] — 2026-06-16
 
 ### Added
